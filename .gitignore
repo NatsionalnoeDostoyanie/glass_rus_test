@@ -1,0 +1,7 @@
+.idea
+
+files/*
+!files/Прайс-лист AGC 2024.03.04 Опт.xlsx
+
+jsons/*
+!jsons/.gitkeep
