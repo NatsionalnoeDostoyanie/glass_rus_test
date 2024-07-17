@@ -1,8 +1,8 @@
 import pandas as pd
 
 
-def choose_price(wholesale, fixed_price):
-    return fixed_price if wholesale == '*' else wholesale
+def choose_price(wholesale_price, fixed_price):
+    return fixed_price if wholesale_price == '*' else wholesale_price
 
 
 def calculate_client_price(price, category):
