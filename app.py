@@ -14,15 +14,25 @@ def calculate_client_price(price, category):
         return price * 1.10
 
 
+XLSX = pd.ExcelFile('files/Прайс-лист AGC 2024.03.04 Опт.xlsx')
+
 DTYPE = {
     'Код AGC': str,
     'Еврокод': str,
     'Старый Код AGC': str
 }
 
-XLSX = pd.ExcelFile('files/Прайс-лист AGC 2024.03.04 Опт.xlsx')
-df_foreign = pd.read_excel(XLSX, 'Автостекло. Аксессуары. Клей', header=4, dtype=DTYPE).dropna(subset=['Код AGC'])
-df_domestic = pd.read_excel(XLSX, 'Российский автопром', header=4, dtype=DTYPE).dropna(subset=['Код AGC'])
+SHEET_NAMES = ['Автостекло. Аксессуары. Клей', 'Российский автопром']
+
+df_foreign, df_domestic = (
+    pd.read_excel(
+        XLSX,
+        sheet_name=sheet_name,
+        header=4,
+        dtype=DTYPE
+    ).dropna(subset=['Код AGC'])
+    for sheet_name in SHEET_NAMES
+)
 
 # Define the required columns
 REQUIRED_COLUMNS = ['Вид стекла', 'Еврокод', 'Код AGC', 'Старый Код AGC', 'Цена фиксирована', 'Наименование', 'ОПТ']
@@ -44,7 +54,12 @@ df_all = pd.concat(
         'Вид стекла': 'category'
     }
 )
-df_all['price'] = df_all.apply(lambda row: choose_price(row['ОПТ'], row['Цена фиксирована']), axis=1)
+
+df_all['price'] = df_all.apply(
+    lambda row: choose_price(row['ОПТ'], row['Цена фиксирована']),
+    axis=1
+)
+
 df_all = df_all.drop(columns=['ОПТ', 'Цена фиксирована'])
 
 df_all.to_json('jsons/all.json', orient='records', force_ascii=False, indent=4)
