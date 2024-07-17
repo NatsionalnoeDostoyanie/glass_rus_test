@@ -20,7 +20,7 @@ DTYPE = {
     'Старый Код AGC': str
 }
 
-XLSX = pd.ExcelFile('files/Прайс-лист AGC 2024.03.04 Опт.XLSX')
+XLSX = pd.ExcelFile('files/Прайс-лист AGC 2024.03.04 Опт.xlsx')
 df_foreign = pd.read_excel(XLSX, 'Автостекло. Аксессуары. Клей', header=4, dtype=DTYPE).dropna(subset=['Код AGC'])
 df_domestic = pd.read_excel(XLSX, 'Российский автопром', header=4, dtype=DTYPE).dropna(subset=['Код AGC'])
 
