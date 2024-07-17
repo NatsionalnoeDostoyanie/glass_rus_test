@@ -24,9 +24,9 @@ xlsx = pd.ExcelFile('files/Прайс-лист AGC 2024.03.04 Опт.xlsx')
 df_foreign = pd.read_excel(xlsx, 'Автостекло. Аксессуары. Клей', header=4, dtype=dtype).dropna(subset=['Код AGC'])
 df_domestic = pd.read_excel(xlsx, 'Российский автопром', header=4, dtype=dtype).dropna(subset=['Код AGC'])
 
-# Define the required columns
-columns = ['Вид стекла', 'Еврокод', 'Код AGC', 'Старый Код AGC', 'Цена фиксирована', 'Наименование', 'ОПТ']
-df_foreign, df_domestic = df_foreign[columns], df_domestic[columns]
+# Define the required required_columns
+required_columns = ['Вид стекла', 'Еврокод', 'Код AGC', 'Старый Код AGC', 'Цена фиксирована', 'Наименование', 'ОПТ']
+df_foreign, df_domestic = df_foreign[required_columns], df_domestic[required_columns]
 
 # Add a 'catalog' column for catalog identification
 df_foreign['catalog'], df_domestic['catalog'] = 'Иномарки', 'Отечественные'
@@ -58,8 +58,9 @@ df_client['client_price'] = df_client.apply(
     axis=1
 )
 
-# Select the required columns for the client
-df_client = df_client[['catalog', 'category', 'art', 'eurocode', 'oldcode', 'name', 'client_price']]
-df_client.columns = ['catalog', 'category', 'art', 'eurocode', 'oldcode', 'name', 'client_price']
+# Select the required required_columns for the client
+client_columns = ['catalog', 'category', 'art', 'eurocode', 'oldcode', 'name', 'client_price']
+df_client = df_client[client_columns]
+df_client.columns = client_columns
 
 df_client.to_excel('files/client_catalog.xlsx', index=False)
