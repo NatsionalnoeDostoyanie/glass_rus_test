@@ -1,11 +1,8 @@
 import pandas as pd
 
 
-def choose_price(row):
-    if '*' == row['ОПТ']:
-        return row['Цена фиксирована']
-    else:
-        return row['ОПТ']
+def choose_price(opt, fixed_price):
+    return fixed_price if opt == '*' else opt
 
 
 def calculate_client_price(price, category):
@@ -29,22 +26,15 @@ df_domestic = pd.read_excel(xlsx, 'Российский автопром', heade
 
 # Define the required columns
 columns = ['Вид стекла', 'Еврокод', 'Код AGC', 'Старый Код AGC', 'Цена фиксирована', 'Наименование', 'ОПТ']
-df_foreign = df_foreign[columns]
-df_domestic = df_domestic[columns]
+df_foreign, df_domestic = df_foreign[columns], df_domestic[columns]
 
 # Add a 'catalog' column for catalog identification
-df_foreign['catalog'] = 'Иномарки'
-df_domestic['catalog'] = 'Отечественные'
-
-df_foreign['price'] = df_foreign.apply(choose_price, axis=1)
-df_domestic['price'] = df_domestic.apply(choose_price, axis=1)
+df_foreign['catalog'], df_domestic['catalog'] = 'Иномарки', 'Отечественные'
 
 # Combine the two DataFrames
 df_all = pd.concat(
     [df_foreign, df_domestic],
     ignore_index=True
-).drop(
-    columns=['ОПТ', 'Цена фиксирована']
 ).rename(
     columns={
         'Код AGC': 'art',
@@ -54,6 +44,8 @@ df_all = pd.concat(
         'Вид стекла': 'category'
     }
 )
+df_all['price'] = df_all.apply(lambda row: choose_price(row['ОПТ'], row['Цена фиксирована']), axis=1)
+df_all = df_all.drop(columns=['ОПТ', 'Цена фиксирована'])
 
 df_all.to_json('jsons/all.json', orient='records', force_ascii=False, indent=4)
 
@@ -62,10 +54,7 @@ df_client = df_all[df_all['category'].isin(['ветровое', 'заднее', 
 
 # Calculate client price
 df_client['client_price'] = df_client.apply(
-    lambda row: calculate_client_price(
-        row['price'],
-        row['category']
-    ),
+    lambda row: calculate_client_price(row['price'], row['category']),
     axis=1
 )
 
