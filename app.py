@@ -14,19 +14,19 @@ def calculate_client_price(price, category):
         return price * 1.10
 
 
-dtype = {
+DTYPE = {
     'Код AGC': str,
     'Еврокод': str,
     'Старый Код AGC': str
 }
 
-xlsx = pd.ExcelFile('files/Прайс-лист AGC 2024.03.04 Опт.xlsx')
-df_foreign = pd.read_excel(xlsx, 'Автостекло. Аксессуары. Клей', header=4, dtype=dtype).dropna(subset=['Код AGC'])
-df_domestic = pd.read_excel(xlsx, 'Российский автопром', header=4, dtype=dtype).dropna(subset=['Код AGC'])
+XLSX = pd.ExcelFile('files/Прайс-лист AGC 2024.03.04 Опт.XLSX')
+df_foreign = pd.read_excel(XLSX, 'Автостекло. Аксессуары. Клей', header=4, dtype=DTYPE).dropna(subset=['Код AGC'])
+df_domestic = pd.read_excel(XLSX, 'Российский автопром', header=4, dtype=DTYPE).dropna(subset=['Код AGC'])
 
-# Define the required required_columns
-required_columns = ['Вид стекла', 'Еврокод', 'Код AGC', 'Старый Код AGC', 'Цена фиксирована', 'Наименование', 'ОПТ']
-df_foreign, df_domestic = df_foreign[required_columns], df_domestic[required_columns]
+# Define the required columns
+REQUIRED_COLUMNS = ['Вид стекла', 'Еврокод', 'Код AGC', 'Старый Код AGC', 'Цена фиксирована', 'Наименование', 'ОПТ']
+df_foreign, df_domestic = df_foreign[REQUIRED_COLUMNS], df_domestic[REQUIRED_COLUMNS]
 
 # Add a 'catalog' column for catalog identification
 df_foreign['catalog'], df_domestic['catalog'] = 'Иномарки', 'Отечественные'
@@ -58,9 +58,9 @@ df_client['client_price'] = df_client.apply(
     axis=1
 )
 
-# Select the required required_columns for the client
-client_columns = ['catalog', 'category', 'art', 'eurocode', 'oldcode', 'name', 'client_price']
-df_client = df_client[client_columns]
-df_client.columns = client_columns
+# Select the required columns for the client
+CLIENT_COLUMNS = ['catalog', 'category', 'art', 'eurocode', 'oldcode', 'name', 'client_price']
+df_client = df_client[CLIENT_COLUMNS]
+df_client.columns = CLIENT_COLUMNS
 
 df_client.to_excel('files/client_catalog.xlsx', index=False)
