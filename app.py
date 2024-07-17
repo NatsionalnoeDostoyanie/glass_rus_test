@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def choose_price(row):
-    if '*' in str(row['ОПТ']):
+    if '*' == row['ОПТ']:
         return row['Цена фиксирована']
     else:
         return row['ОПТ']
